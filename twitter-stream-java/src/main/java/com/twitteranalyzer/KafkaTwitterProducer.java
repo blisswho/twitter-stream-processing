@@ -1,5 +1,6 @@
 package com.twitteranalyzer;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
@@ -11,6 +12,7 @@ import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -32,7 +34,10 @@ public class KafkaTwitterProducer {
 
         // Track list of terms here
         StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
-        hosebirdEndpoint.trackTerms(Collections.singletonList(HASHTAG));
+
+        List<String> terms = Lists.newArrayList("bernie");
+
+        hosebirdEndpoint.trackTerms(terms);
 
         BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(10000);
 
@@ -81,6 +86,5 @@ public class KafkaTwitterProducer {
                 e.printStackTrace();
             }
         }
-
     }
 }

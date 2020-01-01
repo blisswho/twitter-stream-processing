@@ -5,15 +5,16 @@ import json
 
 url = 'http://localhost:5005/updateCache'
 
-consumer = KafkaConsumer('replicated-topic', bootstrap_servers='localhost:9092')
+consumer = KafkaConsumer('my-replicated-topic', bootstrap_servers='localhost:9092, localhost:9093, localhost:9094', value_deserializer=lambda v: v.decode('utf-8'))
 analyzer = SentimentIntensityAnalyzer()
 
 for payload_str in consumer:
-    payload = json.loads(payload_str)
+    payload = json.loads(payload_str.value)
     text = payload['message']
     time = payload['time']
 
     score = analyzer.polarity_scores(text)['compound']
 
     payload = {'score': score, 'time': time}
-    requests.post(url=url, data=payload)
+    print(payload)
+    requests.post(url=url, json=payload)
