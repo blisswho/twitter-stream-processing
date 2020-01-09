@@ -1,0 +1,166 @@
+<!-- Code from d3-graph-gallery.com -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v5.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<div id="my_dataviz"></div>
+
+<style type="text/css">
+/* Style the dots by assigning a fill and stroke */
+.dot {
+    fill: steelblue;
+    stroke: steelblue;
+}
+
+.focus circle {
+    fill: none;
+    stroke: steelblue;
+}
+</style>
+
+
+<script>
+    createGraph();
+
+// $.ajax({
+//     method: 'GET',
+//     url: 'http://localhost:5005/getSentimentAverages',
+//     dataType: 'json', //change the datatype to 'jsonp' works in most cases
+//     xhrFields: {
+//       withCredentials: true
+//     },
+//     crossDomain: true,
+//     contentType: "application/json",
+//     success: (res) => {
+//         createGraph(res);
+//     }
+//   })
+
+  function createGraph(res){
+
+    var old_times = [26297535, 26297536, 26297537, 26297538, 26297539, 26297540];
+    var values = [0.0, 0.0, 0.3638636363636364, 0.2870641666666668, 0.22439549549549556, 0.19268686868686868];
+    var times = [];
+    var data = [];
+
+    for(var i = 0;i < old_times.length;i++){
+        var date = new Date();
+        date.setUTCSeconds(old_times[i] * 60);
+        var parseDateTime = d3.timeParse("%m/%d/%Y, %H:%M:%S %p");
+        // console.log(date.toLocaleString());
+        times.push(parseDateTime(date.toLocaleString()));
+
+        var obj = {"time": parseDateTime(date.toLocaleString()), "value": values[i]};
+        console.log(obj.time)
+        data.push(obj);
+    }
+
+    // for (var key in res) {
+    //     // console.log("key: "+key+", value: "+res[key]);
+    //     var epoch_time = parseInt(key, 10) * 60;
+    //     var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
+    //     d.setUTCSeconds(epoch_time);
+    //     // console.log(d.toLocaleString());
+        
+    //     var parseDateTime = d3.timeParse("%m/%d/%Y, %H:%M:%S %p");
+    //     // 1/7/2020, 12:45:00 PM
+
+    //     values.push(res[key]);
+    //     times.push(parseDateTime(d.toLocaleString()));
+    // }
+
+    // console.log(data);
+
+    // =============== UI RELATED CODE ===============
+
+    var line = d3.line()
+        .x(function(d) { return x(d.time); })
+        .y(function(d) { return y(d.value); });
+
+    // set the dimensions and margins of the graph
+    var margin = {top: 10, right: 30, bottom: 100, left: 60}
+    var width = 1200 - margin.left - margin.right;
+    var height = 600 - margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    var svg = d3.select("#my_dataviz")
+    .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    // X scale and Axis
+    var x = d3.scaleTime()
+        .domain([data[0].time, data[5].time])         // This is the min and the max of the data: 0 to 100 if percentages "[0, 100]"
+        .range([0, width]);       // This is the corresponding value I want in Pixel
+
+    svg
+    .append('g')
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x)
+        .tickFormat(d3.timeFormat("%m-%d %I:%M:%S %p")))
+    .selectAll("text")	
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-65)");
+
+    // X scale and Axis
+    var y = d3.scaleLinear()
+        .domain(d3.extent(values))         // This is the min and the max of the data: 0 to 100 if percentages
+        .range([height, 0]);       // This is the corresponding value I want in Pixel
+
+    svg
+    .append('g')
+    .call(d3.axisLeft(y));
+
+    svg.append("path")
+    .datum(data)
+    .attr("class", "line")
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 1.5)
+    .attr("stroke-linejoin", "round")
+    .attr("stroke-linecap", "round")
+    .attr("d", line);
+
+    svg.selectAll(".dot")
+    .data(data)
+    .enter().append("circle") // Uses the enter().append() method
+    .attr("class", "dot") // Assign a class for styling
+    .attr("cx", function(d) { return x(d.time) })
+    .attr("cy", function(d) { return y(d.value) })
+    .attr("r", 3);
+
+  }
+
+
+  function update() {
+      /*
+    "26297555": 0.30098188976377965,
+    "26297556": 0.21485185185185185,
+    "26297557": 0.24123333333333333,
+    "26297558": 0.3744118279569893,
+    "26297559": 0.4306508771929825,
+    "26305958": -0.009615789473684206
+    */
+
+    var new_data = [
+        {"time": 26297555, "value": 0.30098188976377965},
+        {"time": 26297556, "value": 0.21485185185185185},
+        {"time": 26297557, "value": 0.24123333333333333},
+        {"time": 26297558, "value": 0.3744118279569893},
+        {"time": 26297559, "value": 0.4306508771929825}
+    ];
+
+
+
+  }
+
+
+</script>

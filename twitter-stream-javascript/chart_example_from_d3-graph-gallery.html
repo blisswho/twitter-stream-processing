@@ -4,10 +4,10 @@
 
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <!-- Create a div where the graph will take place -->
 <div id="my_dataviz"></div>
-
 
 <script>
 
@@ -63,5 +63,42 @@ d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_data
         )
 
 })
+
+updateData()
+
+function updateData() {
+  // var jqxhr = $.ajax("http://127.0.0.1:5005/getSentimentAverages", function(){
+  //   console.log("Success!");
+  // });
+  // console.log("Hello mom!")
+
+  $.ajax({
+    method: 'GET',
+    url: 'http://localhost:5005/getSentimentAverages',
+    dataType: 'json', //change the datatype to 'jsonp' works in most cases
+    xhrFields: {
+      withCredentials: true
+    },
+    crossDomain: true,
+    contentType: "application/json",
+    success: (res) => {
+    }
+  })
+
+
+
+//   $.ajaxSetup({
+//     type: "POST",
+//     data: {},
+//     dataType: 'json',
+//     xhrFields: {
+//        withCredentials: true
+//     },
+//     crossDomain: true,
+//     contentType: 'application/json; charset=utf-8'
+// });
+}
+
+    
 
 </script>

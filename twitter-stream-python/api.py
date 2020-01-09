@@ -2,8 +2,11 @@ from flask import Flask, request, render_template
 import json
 import redis
 import time
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+CORS(app, support_credentials=True)
+
 r = redis.Redis()
 """
 epoch minutes ->  (sentiment sum,  count)
@@ -48,6 +51,7 @@ def updateCache():
 
 
 @app.route('/getSentimentAverages', methods=['GET'])
+@cross_origin(supports_credentials=True)
 def getSentimentAverages():
 
     response = dict()
